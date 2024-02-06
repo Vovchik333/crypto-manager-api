@@ -1,0 +1,22 @@
+{
+  "name": "crypto-manager-api",
+  "description": "API for analyzing and managing cryptocurrency investments.",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "nodemon --exec \"node --loader ts-node/esm\" src/server.ts",
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Volodymyr Potapenko",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
