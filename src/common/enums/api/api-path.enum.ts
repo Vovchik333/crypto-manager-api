@@ -5,7 +5,7 @@ const ApiPath = {
     USERS: '/users',
     AUTH: '/auth',
     SIGN_IN: '/sign-in',
-    SIGN_UP: 'sign-up'
+    SIGN_UP: '/sign-up'
 } as const;
 
 export { ApiPath };
