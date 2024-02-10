@@ -1,9 +1,9 @@
+import { SignUpPayload } from "../sign/sign-up-payload.type.js";
+
 type User = {
     _id: string;
-    nickname: string;
-    email: string;
-    updatedAt: Date;
-    createdAt: Date;
-}
+    updatedAt?: Date;
+    createdAt?: Date;
+} & SignUpPayload;
 
 export { type User };
