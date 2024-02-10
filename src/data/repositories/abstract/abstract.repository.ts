@@ -1,22 +1,22 @@
 import { Model, Types, UpdateQuery } from "mongoose";
 
 class AbstractRepository<T> {
-    #model: Model<T>;
+    protected model: Model<T>;
 
     constructor(model: Model<T>) {
-        this.#model = model;
+        this.model = model;
     }
 
     public getAll(): Promise<T[]> {
-        return this.#model.find({}).exec();
+        return this.model.find({}).exec();
     }
 
     public getById(id: string): Promise<T | null> {
-        return this.#model.findById(id).exec();
+        return this.model.findById(id).exec();
     }
 
     public create(payload: T): Promise<T> {
-        return this.#model.create(payload);
+        return this.model.create(payload);
     }
 
     public async updateById(id: string, payload: UpdateQuery<T>): Promise<T | null> {
@@ -25,11 +25,11 @@ class AbstractRepository<T> {
             new: true
         }
 
-        return await this.#model.findByIdAndUpdate(id, { ...payload }, options).exec();
+        return await this.model.findByIdAndUpdate(id, { ...payload }, options).exec();
     }
 
     public deleteById(id: string): Promise<T | null> {
-        return this.#model.findByIdAndDelete(id).exec();
+        return this.model.findByIdAndDelete(id).exec();
     }   
 }
 

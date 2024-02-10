@@ -6,6 +6,10 @@ class UserRepository extends AbstractRepository<User> {
     constructor(model: Model<User>) {
         super(model);
     }
+
+    public getByEmail(email: string) {
+        return this.model.findOne({ email }).exec();
+    }
 }
 
 export default UserRepository;
