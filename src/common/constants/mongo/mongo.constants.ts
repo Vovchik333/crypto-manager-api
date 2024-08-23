@@ -1,0 +1,3 @@
+const OBJECT_ID_LENGTH = 24;
+
+export { OBJECT_ID_LENGTH };
