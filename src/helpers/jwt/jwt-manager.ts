@@ -1,14 +1,10 @@
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
-import HttpError from "../error/http.error.js";
-import { HttpCode } from "../../common/enums/http/http-code.enum.js";
-import { JWT_SECRET } from "../../config/config.js";
+import { HttpError } from "@helpers";
+import { HttpCode } from "@enums";
+import { JWT_SECRET } from "@config";
 
 class JwtManager {
-    #secret: Secret;
-
-    constructor(secret: string) {
-        this.#secret = secret;
-    }
+    #secret: Secret = JWT_SECRET;
 
     public signJwt(payload: string | object | Buffer): string {
         return jwt.sign(payload, this.#secret);
@@ -26,6 +22,4 @@ class JwtManager {
     }
 }
 
-const jwtManager = new JwtManager(JWT_SECRET);
-
-export { jwtManager };
+export { JwtManager };

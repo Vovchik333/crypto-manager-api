@@ -1,7 +1,5 @@
-import { HttpCode } from "../../common/enums/http/http-code.enum.js";
-import { ValueOf } from "../../common/types/value-of/value-of.type.js";
-
-const DEFAULT_MESSAGE = 'Internal Server Error.';
+import { HttpCode, ErrorMessage } from "@enums";
+import { ValueOf } from "@generic";
 
 type Constructor = {
     status: ValueOf<typeof HttpCode>;
@@ -13,7 +11,7 @@ class HttpError extends Error {
 
     constructor({ 
         status = HttpCode.INTERNAL_SERVER_ERROR, 
-        message = DEFAULT_MESSAGE
+        message = ErrorMessage.INTERNAL_SERVER_ERROR
     }: Constructor) {
         super(message);
         this.#status = status;
@@ -24,4 +22,4 @@ class HttpError extends Error {
     }
 }
 
-export default HttpError;
+export { HttpError };
