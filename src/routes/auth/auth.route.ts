@@ -1,19 +1,19 @@
 import { Router } from "express";
-import { ApiPath } from "../../common/enums/api/api-path.enum.js";
-import { validate } from "../../middlewares/validate/validate.middleware.js";
-import { signInSchema, signUpSchema } from "../../helpers/validation/schemas/sign/sign.schemas.js";
-import { authController } from "../../controllers/controllers.js";
+import { ApiPath } from "@enums";
+import { validate } from "@middlewares";
+import { signInSchema, signUpSchema } from "@helpers";
+import { authController } from "@controllers";
 
 const router = Router();
 
 router.post(
     ApiPath.SIGN_UP, 
-    validate(signUpSchema),
+    validate(signUpSchema, { isIdExists: false }),
     authController.signUp
 );
 router.post(
     ApiPath.SIGN_IN, 
-    validate(signInSchema),
+    validate(signInSchema, { isIdExists: false }),
     authController.signIn
 );
 
