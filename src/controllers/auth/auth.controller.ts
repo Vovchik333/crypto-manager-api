@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import AuthService from "../../services/auth/auth.service.js";
+import { AuthService } from "@services";
+import { HttpCode } from "@enums";
 
 class AuthController {
     #authService: AuthService;
@@ -14,7 +15,7 @@ class AuthController {
         try {
             const userWithToken = await this.#authService.signUp(req.body);
 
-            res.send(userWithToken);
+            res.status(HttpCode.CREATED).send(userWithToken);
         } catch(err) {
             next(err);
         }

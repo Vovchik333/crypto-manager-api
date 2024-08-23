@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import UserService from "../../services/user/user.service.js";
-import { User } from "../../common/types/user/user.type.js";
-import { JwtRequest } from "../../common/types/jwt/jwt-request.type.js";
-import HttpError from "../../helpers/error/http.error.js";
-import { HttpCode } from "../../common/enums/http/http-code.enum.js";
+import { UserService } from "@services";
+import { User, JwtRequest } from "@types";
+import { HttpError } from "@helpers";
+import { ErrorMessage, HttpCode } from "@enums";
 
 class UserController {
     #userService: UserService;
@@ -18,6 +17,14 @@ class UserController {
     public async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params as Record<'id', string>;
+
+            if(id !== (req as JwtRequest).token.id) {
+                throw new HttpError({
+                    status: HttpCode.UNAUTHORIZED, 
+                    message: ErrorMessage.USER_ID_MISMATCH
+                });
+            }
+            
             const user = await this.#userService.getById(id);
         
             res.send(user);
@@ -33,7 +40,7 @@ class UserController {
             if(id !== (req as JwtRequest).token.id) {
                 throw new HttpError({
                     status: HttpCode.UNAUTHORIZED, 
-                    message: 'User id mismatch'
+                    message: ErrorMessage.USER_ID_MISMATCH
                 });
             }
 
@@ -52,7 +59,7 @@ class UserController {
             if(id !== (req as JwtRequest).token.id) {
                 throw new HttpError({
                     status: HttpCode.UNAUTHORIZED, 
-                    message: 'User id mismatch'
+                    message: ErrorMessage.USER_ID_MISMATCH
                 });
             }
 
