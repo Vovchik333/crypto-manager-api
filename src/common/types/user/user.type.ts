@@ -1,7 +1,7 @@
-import { SignUpPayload } from "../sign/sign-up-payload.type.js";
+import { SignUpPayload } from "../sign/sign-up-payload.type";
 
 type User = {
-    _id: string;
+    id: string;
     updatedAt?: Date;
     createdAt?: Date;
 } & SignUpPayload;

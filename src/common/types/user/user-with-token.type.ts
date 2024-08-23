@@ -1,4 +1,4 @@
-import { User } from "./user.type.js";
+import { User } from "./user.type";
 
 type UserWithToken = {
     user: User;

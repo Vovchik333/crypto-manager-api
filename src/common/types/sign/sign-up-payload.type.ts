@@ -1,4 +1,4 @@
-import { SignInPayload } from "./sign-in-payload.type.js";
+import { SignInPayload } from "./sign-in-payload.type";
 
 type SignUpPayload = {
     nickname: string;
