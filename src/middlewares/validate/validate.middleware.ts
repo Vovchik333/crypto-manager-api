@@ -1,25 +1,39 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectSchema } from "joi";
-import HttpError from "../../helpers/error/http.error.js";
-import { HttpCode } from "../../common/enums/http/http-code.enum.js";
+import { HttpError, objectIdSchema } from "@helpers";
+import { HttpCode } from "@enums";
 
-const validate = (schema: ObjectSchema, isBody = true) => 
+type ValidateOptions = { 
+    isIdExists: boolean 
+};
+
+const validate = (
+    schema: ObjectSchema | null = null, 
+    options: ValidateOptions = { isIdExists: true }
+) => 
     (req: Request, res: Response, next: NextFunction) => {
         try {
-            let isValidResult;
+            if (options.isIdExists) {
+                const isValidId = objectIdSchema.validate(req.body.id);
 
-            if (isBody) {
-                isValidResult = schema.validate(req.body);
-            } else {
-                isValidResult = schema.validate(req.params);
+                if(isValidId.error) {
+                    throw new HttpError({
+                        status: HttpCode.BAD_REQUEST, 
+                        message: isValidId.error.details[0].message
+                    });
+                };
             }
 
-            if(isValidResult.error) {
-                throw new HttpError({
-                    status: HttpCode.BAD_REQUEST, 
-                    message: isValidResult.error.details[0].message
-                });
-            };
+            if (schema !== null) {
+                const isValidBody = schema.validate(req.body);
+
+                if(isValidBody.error) {
+                    throw new HttpError({
+                        status: HttpCode.BAD_REQUEST, 
+                        message: isValidBody.error.details[0].message
+                    });
+                }
+            }
 
             next();
         } catch(err) {

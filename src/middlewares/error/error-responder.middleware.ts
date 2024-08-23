@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpCode } from "../../common/enums/http/http-code.enum.js";
-import HttpError from "../../helpers/error/http.error.js";
+import { HttpError } from "@helpers";
+import { ErrorMessage, HttpCode } from "@enums";
 
 const errorResponder = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof HttpError) {
@@ -9,7 +9,7 @@ const errorResponder = (err: Error, req: Request, res: Response, next: NextFunct
         return;
     }
 
-    res.status(HttpCode.INTERNAL_SERVER_ERROR).send('Internal Server Error.');
+    res.status(HttpCode.INTERNAL_SERVER_ERROR).send(ErrorMessage.INTERNAL_SERVER_ERROR);
 }
 
 export { errorResponder };
