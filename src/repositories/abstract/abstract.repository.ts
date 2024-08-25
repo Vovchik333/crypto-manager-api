@@ -7,15 +7,15 @@ class AbstractRepository<T> {
         this.model = model;
     }
 
-    public getAll(): Promise<T[]> {
-        return this.model.find({}).exec();
+    public getByFilter(filter: Partial<T> = {}): Promise<T[]> {
+        return this.model.find(filter).exec();
     }
 
     public getById(id: string): Promise<T | null> {
         return this.model.findById(id).exec();
     }
 
-    public create(payload: T): Promise<T> {
+    public create(payload: Omit<T, 'id' | 'createdAt' | 'updatedAt'>): Promise<T> {
         return this.model.create(payload);
     }
 
