@@ -21,7 +21,7 @@ class UserService {
             });
         }
 
-        const user = mongoObjectMapper(userFromDb);
+        const user = mongoObjectMapper<User>(userFromDb);
 
         return user;
     }
@@ -49,7 +49,7 @@ class UserService {
             });
         }
 
-        const user = mongoObjectMapper(userFromDb);
+        const user = mongoObjectMapper<User>(userFromDb);
 
         return user;
     }
@@ -64,7 +64,7 @@ class UserService {
             });
         }
 
-        const user = mongoObjectMapper(userFromDb);
+        const user = mongoObjectMapper<User>(userFromDb);
 
         return user;
     }

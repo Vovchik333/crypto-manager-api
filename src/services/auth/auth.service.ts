@@ -21,7 +21,7 @@ class AuthService {
         }
 
         payload.password = await hashManager.hashData(payload.password);
-        const userFromDb = await this.#userRepository.create(payload as User);
+        const userFromDb = await this.#userRepository.create(payload);
         const user = mongoObjectMapper<User>(userFromDb);
 
         return {
