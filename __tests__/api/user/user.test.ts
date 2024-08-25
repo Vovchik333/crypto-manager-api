@@ -2,20 +2,22 @@ import supertest from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { 
-    userFakeData, 
-    FAKE_USER_JWT_TOKEN, 
-    updateUserFakeData,
-    otherUserFakeData
+    USER_OBJECT_ID, 
+    updateUserInput,
+    otherUserInput,
+    signUpInput
 } from "../../data/user";
-import app from '../../../src/app';
+import app from 'app';
 import { userRepository } from "@repositories";
-import { HttpCode, HttpHeader } from "@enums";
+import { ApiPath, HttpCode, HttpHeader, HttpMethod } from "@enums";
 import { hashManager } from "@helpers";
 import { OBJECT_ID_LENGTH } from "@constants";
 import { ErrorMessage } from "@enums";
 import { authService, userService } from "@services";
 
-describe('api/users', () => {
+const usersPath = `${ApiPath.API}${ApiPath.USERS}`;
+
+describe(`${usersPath} routes`, () => {
     let mongoMemoryServer: MongoMemoryServer;
 
     beforeAll(async () => {
@@ -29,17 +31,16 @@ describe('api/users', () => {
         mongoMemoryServer.stop()    
     });
 
-    describe('GET api/users/:id', () => {
+    describe(`${HttpMethod.GET} ${usersPath}${ApiPath.ID}`, () => {
         afterEach(async () => {
             await userRepository.deleteAll();
         });
 
         it('should return user', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .get(`/api/users/${id}`)
-                .set('Accept', 'application/json')
+                .get(`${usersPath}/${id}`)
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const user = response.body;
@@ -47,16 +48,16 @@ describe('api/users', () => {
             expect(response.status).toBe(HttpCode.OK);
 
             expect(user.id.length).toBe(OBJECT_ID_LENGTH);
-            expect(user.nickname).toBe(userFakeData.nickname);
-            expect(user.email).toBe(userFakeData.email);
-            expect(hashManager.compare(userFakeData.password, user.password)).toBe(true);
+            expect(user.nickname).toBe(signUpInput.nickname);
+            expect(user.email).toBe(signUpInput.email);
+            expect(hashManager.compare(signUpInput.password, user.password)).toBe(true);
         });
 
         it('should return a message that a user not authorized', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+            const { user: { id } } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .get(`/api/users/${id}`);
+                .get(`${usersPath}/${id}`);
 
             const { error } = response.body;
             
@@ -64,13 +65,12 @@ describe('api/users', () => {
             expect(error).toBe(ErrorMessage.NOT_AUTHORIZED);
         });
 
-        it('should return a message that a user ID in JWT mismatch', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+        it('should return a message that a user ID mismatch', async () => {
+            const {  accessToken } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .get(`/api/users/${id}`)
-                .set('Accept', 'application/json')
-                .set(HttpHeader.AUTHORIZATION, `Bearer ${FAKE_USER_JWT_TOKEN}`);
+                .get(`${usersPath}/${USER_OBJECT_ID}`)
+                .set(HttpHeader.AUTHORIZATION, `Bearer ${accessToken}`);
 
             const { error } = response.body;
             
@@ -79,12 +79,11 @@ describe('api/users', () => {
         });
 
         it('should return a message that a user not found', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
             await userService.deleteById(id);
 
             const response = await supertest(app.instance)
-                .get(`/api/users/${id}`)
-                .set('Accept', 'application/json')
+                .get(`${usersPath}/${id}`)
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const { error } = response.body;
@@ -94,18 +93,17 @@ describe('api/users', () => {
         });
     });
 
-    describe('PUT api/users/:id', () => {
+    describe(`${HttpMethod.PUT} ${usersPath}${ApiPath.ID}`, () => {
         afterEach(async () => {
             await userRepository.deleteAll();
         });
 
         it('should return updated user', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .put(`/api/users/${id}`)
-                .send({ ...updateUserFakeData })
-                .set('Accept', 'application/json')
+                .put(`${usersPath}/${id}`)
+                .send({ ...updateUserInput })
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const user = response.body;
@@ -113,19 +111,18 @@ describe('api/users', () => {
             expect(response.status).toBe(HttpCode.OK);
 
             expect(user.id.length).toBe(OBJECT_ID_LENGTH);
-            expect(user.nickname).toBe(updateUserFakeData.nickname);
-            expect(user.email).toBe(updateUserFakeData.email);
-            expect(hashManager.compare(updateUserFakeData.password, user.password)).toBe(true);
+            expect(user.nickname).toBe(updateUserInput.nickname);
+            expect(user.email).toBe(updateUserInput.email);
+            expect(hashManager.compare(updateUserInput.password, user.password)).toBe(true);
         });
 
         it('should return a message that a user with the same mail already exists', async () => {
-            await authService.signUp({ ...userFakeData });
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...otherUserFakeData });
+            await authService.signUp({ ...signUpInput });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...otherUserInput });
 
             const response = await supertest(app.instance)
-                .put(`/api/users/${id}`)
-                .send({ ...updateUserFakeData, email: otherUserFakeData.email })
-                .set('Accept', 'application/json')
+                .put(`${usersPath}/${id}`)
+                .send({ ...updateUserInput, email: otherUserInput.email })
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const { error } = response.body;
@@ -135,11 +132,11 @@ describe('api/users', () => {
         });
 
         it('should return a message that a user not authorized', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+            const { user: { id } } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .put(`/api/users/${id}`)
-                .send({ ...updateUserFakeData });
+                .put(`${usersPath}/${id}`)
+                .send({ ...updateUserInput });
 
             const { error } = response.body;
             
@@ -147,14 +144,13 @@ describe('api/users', () => {
             expect(error).toBe(ErrorMessage.NOT_AUTHORIZED);
         });
 
-        it('should return a message that a user ID in JWT mismatch', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+        it('should return a message that a user ID mismatch', async () => {
+            const { user: { id }, accessToken } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .put(`/api/users/${id}`)
-                .send({ ...updateUserFakeData })
-                .set('Accept', 'application/json')
-                .set(HttpHeader.AUTHORIZATION, `Bearer ${FAKE_USER_JWT_TOKEN}`);
+                .put(`${usersPath}/${USER_OBJECT_ID}`)
+                .send({ ...updateUserInput })
+                .set(HttpHeader.AUTHORIZATION, `Bearer ${accessToken}`);
 
             const { error } = response.body;
             
@@ -163,13 +159,12 @@ describe('api/users', () => {
         });
 
         it('should return a message that a user not found', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
             await userService.deleteById(id);
 
             const response = await supertest(app.instance)
-                .put(`/api/users/${id}`)
-                .send({ ...updateUserFakeData })
-                .set('Accept', 'application/json')
+                .put(`${usersPath}/${id}`)
+                .send({ ...updateUserInput })
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const { error } = response.body;
@@ -179,17 +174,16 @@ describe('api/users', () => {
         });
     });
 
-    describe('DELETE api/users/:id', () => {
+    describe(`${HttpMethod.DELETE} ${usersPath}${ApiPath.ID}`, () => {
         afterEach(async () => {
             await userRepository.deleteAll();
         });
 
         it('should return deleted user', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .delete(`/api/users/${id}`)
-                .set('Accept', 'application/json')
+                .delete(`${usersPath}/${id}`)
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const user = response.body;
@@ -200,10 +194,10 @@ describe('api/users', () => {
         });
 
         it('should return a message that a user not authorized', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+            const { user: { id } } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .delete(`/api/users/${id}`);
+                .delete(`${usersPath}/${id}`);
 
             const { error } = response.body;
             
@@ -211,13 +205,12 @@ describe('api/users', () => {
             expect(error).toBe(ErrorMessage.NOT_AUTHORIZED);
         });
 
-        it('should return a message that a user ID in JWT mismatch', async () => {
-            const { user: { id } } = await authService.signUp({ ...userFakeData });
+        it('should return a message that a user ID mismatch', async () => {
+            const { accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
 
             const response = await supertest(app.instance)
-                .delete(`/api/users/${id}`)
-                .set('Accept', 'application/json')
-                .set(HttpHeader.AUTHORIZATION, `Bearer ${FAKE_USER_JWT_TOKEN}`);
+                .delete(`${usersPath}/${USER_OBJECT_ID}`)
+                .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const { error } = response.body;
             
@@ -226,12 +219,11 @@ describe('api/users', () => {
         });
 
         it('should return a message that a user not found', async () => {
-            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...userFakeData });
+            const { user: { id }, accessToken: tokenForRequest } = await authService.signUp({ ...signUpInput });
             await userService.deleteById(id);
 
             const response = await supertest(app.instance)
-                .delete(`/api/users/${id}`)
-                .set('Accept', 'application/json')
+                .delete(`${usersPath}/${id}`)
                 .set(HttpHeader.AUTHORIZATION, `Bearer ${tokenForRequest}`);
 
             const { error } = response.body;

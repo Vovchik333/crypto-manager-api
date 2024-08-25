@@ -2,18 +2,22 @@ import supertest from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { 
-    signUpUserFakeData, 
-    signInUserFakeData 
+    signUpInput, 
+    signInInput 
 } from "../../data/user";
-import app from '../../../src/app';
+import app from 'app';
 import { userRepository } from "@repositories";
-import { HttpCode } from "@enums";
+import { ApiPath, HttpCode, HttpMethod } from "@enums";
 import { hashManager } from "@helpers";
 import { OBJECT_ID_LENGTH } from "@constants";
 import { ErrorMessage } from "@enums";
 import { authService } from "@services";
 
-describe('api/auth', () => {
+const authPath = `${ApiPath.API}${ApiPath.AUTH}`;
+const signUpPath = `${authPath}${ApiPath.SIGN_UP}`;
+const signInPath = `${authPath}${ApiPath.SIGN_IN}`;
+
+describe(`${authPath} routes`, () => {
     let mongoMemoryServer: MongoMemoryServer;
 
     beforeAll(async () => {
@@ -27,7 +31,7 @@ describe('api/auth', () => {
         mongoMemoryServer.stop()    
     });
 
-    describe('POST api/auth/sign-up', () => {
+    describe(`${HttpMethod.POST} ${signUpPath}`, () => {
         afterEach(async () => {
             await userRepository.deleteAll();
         });
@@ -35,25 +39,24 @@ describe('api/auth', () => {
         it('should return registered user', async () => {
             const response = await supertest(app.instance)
                 .post('/api/auth/sign-up')
-                .send(signUpUserFakeData);
+                .send(signUpInput);
 
             const { user, accessToken } = response.body;
+            const { id, nickname, email, password } = user;
             
             expect(response.status).toBe(HttpCode.CREATED);
-
-            expect(user.id.length).toBe(OBJECT_ID_LENGTH);
-            expect(user.nickname).toBe(signUpUserFakeData.nickname);
-            expect(user.email).toBe(signUpUserFakeData.email);
-            expect(hashManager.compare(signUpUserFakeData.password, user.password)).toBe(true);
+            expect(id.length).toBe(OBJECT_ID_LENGTH);
+            expect({ nickname, email }).toEqual({ nickname: signUpInput.nickname, email: signUpInput.email });
+            expect(hashManager.compare(signUpInput.password, password)).toBe(true);
             expect(accessToken).toBeDefined();
         });
 
         it('should return a message that a user with the same mail already exists', async () => {
-            await authService.signUp({ ...signUpUserFakeData });
+            await authService.signUp({ ...signUpInput });
             
             const response = await supertest(app.instance)
                 .post('/api/auth/sign-up')
-                .send(signUpUserFakeData);
+                .send(signUpInput);
 
             const { error } = response.body;
             
@@ -62,9 +65,9 @@ describe('api/auth', () => {
         });
     });
 
-    describe('POST api/auth/sign-in', () => {
+    describe(`${HttpMethod.POST} ${signInPath}`, () => {
         beforeEach(async () => {
-            await authService.signUp({ ...signUpUserFakeData });
+            await authService.signUp({ ...signUpInput });
         });
         afterEach(async () => {
             await userRepository.deleteAll();
@@ -73,23 +76,22 @@ describe('api/auth', () => {
         it('should return the logged in user', async () => {
             const response = await supertest(app.instance)
                 .post('/api/auth/sign-in')
-                .send(signInUserFakeData);
+                .send(signInInput);
 
             const { user, accessToken } = response.body;
+            const { id, nickname, email, password } = user;
             
             expect(response.status).toBe(HttpCode.OK);
-
-            expect(user.id.length).toBe(OBJECT_ID_LENGTH);
-            expect(user.nickname).toBe(signUpUserFakeData.nickname);
-            expect(user.email).toBe(signUpUserFakeData.email);
-            expect(hashManager.compare(signUpUserFakeData.password, user.password)).toBe(true);
+            expect(id.length).toBe(OBJECT_ID_LENGTH);
+            expect({ nickname, email }).toEqual({ nickname: signUpInput.nickname, email: signUpInput.email });
+            expect(hashManager.compare(signUpInput.password, password)).toBe(true);
             expect(accessToken).toBeDefined();
         });
 
         it('should return a message that a user not found', async () => {
             const response = await supertest(app.instance)
                 .post('/api/auth/sign-in')
-                .send({ ...signInUserFakeData, email: 'example@gmail.com' });
+                .send({ ...signInInput, email: 'example@gmail.com' });
 
             const { error } = response.body;
             
@@ -100,7 +102,7 @@ describe('api/auth', () => {
         it('should return a message that a user has incorrect password', async () => {
             const response = await supertest(app.instance)
                 .post('/api/auth/sign-in')
-                .send({ ...signInUserFakeData, password: 'incorrect123' });
+                .send({ ...signInInput, password: 'incorrect123' });
 
             const { error } = response.body;
             
