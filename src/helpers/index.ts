@@ -12,7 +12,9 @@ export {
     objectIdSchema, 
     signInSchema, 
     signUpSchema, 
-    updateUserSchema 
+    updateUserSchema, 
+    createTransactionSchema,
+    updateTransactionSchema
 } from './validation-schemas';
 export { HttpError } from './error/http.error';
 export { mongoObjectMapper } from './mappers/mongo-object-mapper';
