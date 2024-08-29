@@ -9,18 +9,12 @@
         "resolveJsonModule": true,
         "baseUrl": "src",
         "paths": {
+            "@lib/*": ["lib/*"],
+            "@routes/*": ["routes/*"],
             "@constants": ["common/constants"],
             "@enums": ["common/enums"],
-            "@generic": ["common/generic"],
             "@types": ["common/types"],
-            "@config": ["config"],
-            "@database": ["database"],
-            "@helpers": ["helpers"],
-            "@middlewares": ["middlewares"],
-            "@routes": ["routes"],
-            "@controllers": ["controllers"],
-            "@services": ["services"],
-            "@repositories": ["repositories"]
+            "@config": ["config"]
         }
     }
 }

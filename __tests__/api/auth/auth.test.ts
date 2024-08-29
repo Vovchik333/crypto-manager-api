@@ -6,12 +6,12 @@ import {
     signInInput 
 } from "../../data/user";
 import app from 'app';
-import { userRepository } from "@repositories";
-import { ApiPath, HttpCode, HttpMethod } from "@enums";
-import { hashManager } from "@helpers";
+import { ApiPath, ErrorMessage } from "@enums";
+import { HttpCode, HttpMethod } from "@lib/services/http";
+import { hashService } from "@lib/services/hash";
 import { OBJECT_ID_LENGTH } from "@constants";
-import { ErrorMessage } from "@enums";
-import { authService } from "@services";
+import { authService } from "@routes/auth";
+import { userRepository } from "@routes/user";
 
 const authPath = `${ApiPath.API}${ApiPath.AUTH}`;
 const signUpPath = `${authPath}${ApiPath.SIGN_UP}`;
@@ -47,7 +47,7 @@ describe(`${authPath} routes`, () => {
             expect(response.status).toBe(HttpCode.CREATED);
             expect(id.length).toBe(OBJECT_ID_LENGTH);
             expect({ nickname, email }).toEqual({ nickname: signUpInput.nickname, email: signUpInput.email });
-            expect(hashManager.compare(signUpInput.password, password)).toBe(true);
+            expect(hashService.compare(signUpInput.password, password)).toBe(true);
             expect(accessToken).toBeDefined();
         });
 
@@ -84,7 +84,7 @@ describe(`${authPath} routes`, () => {
             expect(response.status).toBe(HttpCode.OK);
             expect(id.length).toBe(OBJECT_ID_LENGTH);
             expect({ nickname, email }).toEqual({ nickname: signUpInput.nickname, email: signUpInput.email });
-            expect(hashManager.compare(signUpInput.password, password)).toBe(true);
+            expect(hashService.compare(signUpInput.password, password)).toBe(true);
             expect(accessToken).toBeDefined();
         });
 

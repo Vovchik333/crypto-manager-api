@@ -1,5 +1,5 @@
 import { TransactionType } from "@enums";
-import { ValueOf } from "@generic";
+import { ValueOf } from "@lib/types/generic";
 
 type Transaction = {
     id: string;

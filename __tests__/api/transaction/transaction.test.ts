@@ -2,10 +2,12 @@ import supertest from "supertest";
 import mongoose from "mongoose";
 import app from "app";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { transactionRepository, userRepository } from "@repositories";
-import { authService, transactionService } from "@services";
+import { userRepository } from "@routes/user";
+import { authService } from "@routes/auth";
+import { transactionService, transactionRepository } from "@routes/transaction";
 import { transactionInput, signUpInput, otherTransactionInput, transactionUpdateInput } from "../../data";
-import { ApiPath, ErrorMessage, HttpCode, HttpHeader, HttpMethod } from "@enums";
+import { ApiPath, ErrorMessage } from "@enums";
+import { HttpCode, HttpHeader, HttpMethod } from "@lib/services/http";
 import { OBJECT_ID_LENGTH } from "@constants";
 
 const transactionPath = `${ApiPath.API}${ApiPath.TRANSACTIONS}`;

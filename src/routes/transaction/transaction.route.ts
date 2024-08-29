@@ -1,40 +1,56 @@
 import { Router } from "express";
 import { ApiPath } from "@enums";
-import { transactionController } from "@controllers";
-import { validate, authorization } from "@middlewares";
-import { createTransactionSchema, updateTransactionSchema } from "@helpers";
+import { TransactionController } from "./transaction.controller";
+import { validate, authorization } from "@lib/middlewares";
+import { createTransactionSchema, updateTransactionSchema } from "./transaction.schemas";
 
-const transactionRoutes = Router();
+class TransactionRoute {
+    #transactionController: TransactionController;
+    #router: Router;
 
-transactionRoutes.post(
-    ApiPath.ROOT, 
-    validate(createTransactionSchema),
-    authorization,
-    transactionController.create
-);
-transactionRoutes.get(
-    ApiPath.ROOT, 
-    validate(null, { isIdExists: false }),
-    authorization,
-    transactionController.getByFilter
-);
-transactionRoutes.get(
-    ApiPath.ID, 
-    validate(),
-    authorization,
-    transactionController.getById
-);
-transactionRoutes.put(
-    ApiPath.ID, 
-    validate(updateTransactionSchema),
-    authorization,
-    transactionController.updateById
-);
-transactionRoutes.delete(
-    ApiPath.ID, 
-    validate(),
-    authorization,
-    transactionController.deleteById
-);
+    constructor(transactionController: TransactionController) {
+        this.#router = Router();
+        this.#transactionController = transactionController;
 
-export { transactionRoutes };
+        this.#initRoutes();
+    }
+
+    public get router() {
+        return this.#router;
+    }
+
+    #initRoutes(): void {
+        this.#router.post(
+            ApiPath.ROOT, 
+            validate(createTransactionSchema),
+            authorization,
+            this.#transactionController.create
+        );
+        this.#router.get(
+            ApiPath.ROOT, 
+            validate(null, { isIdExists: false }),
+            authorization,
+            this.#transactionController.getByFilter
+        );
+        this.#router.get(
+            ApiPath.ID, 
+            validate(),
+            authorization,
+            this.#transactionController.getById
+        );
+        this.#router.put(
+            ApiPath.ID, 
+            validate(updateTransactionSchema),
+            authorization,
+            this.#transactionController.updateById
+        );
+        this.#router.delete(
+            ApiPath.ID, 
+            validate(),
+            authorization,
+            this.#transactionController.deleteById
+        );
+    }
+}
+
+export { TransactionRoute };

@@ -1,4 +1,3 @@
-export { type JwtRequest } from './jwt';
 export { 
     type SignInPayload, 
     type SignUpPayload 

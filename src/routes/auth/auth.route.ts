@@ -1,20 +1,36 @@
 import { Router } from "express";
 import { ApiPath } from "@enums";
-import { validate } from "@middlewares";
-import { signInSchema, signUpSchema } from "@helpers";
-import { authController } from "@controllers";
+import { validate } from "@lib/middlewares";
+import { signInSchema, signUpSchema } from "./auth.schemas";
+import { AuthController } from "./auth.controller";
 
-const router = Router();
+class AuthRoute {
+    #authController: AuthController;
+    #router: Router;
 
-router.post(
-    ApiPath.SIGN_UP, 
-    validate(signUpSchema, { isIdExists: false }),
-    authController.signUp
-);
-router.post(
-    ApiPath.SIGN_IN, 
-    validate(signInSchema, { isIdExists: false }),
-    authController.signIn
-);
+    constructor(authController: AuthController) {
+        this.#router = Router();
+        this.#authController = authController;
 
-export { router as authRoutes };
+        this.#initRoutes();
+    }
+
+    public get router() {
+        return this.#router;
+    }
+
+    #initRoutes(): void {
+        this.#router.post(
+            ApiPath.SIGN_UP, 
+            validate(signUpSchema, { isIdExists: false }),
+            this.#authController.signUp
+        );
+        this.#router.post(
+            ApiPath.SIGN_IN, 
+            validate(signInSchema, { isIdExists: false }),
+            this.#authController.signIn
+        );
+    }
+}
+
+export { AuthRoute };

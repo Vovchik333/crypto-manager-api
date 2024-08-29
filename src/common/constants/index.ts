@@ -8,4 +8,4 @@ export {
     MIN_PRICE_PER_COIN,
     MIN_QUANTITY
 } from './transaction/transaction.constants';
-export { OBJECT_ID_LENGTH } from './mongo/mongo.constants';
+export { OBJECT_ID_LENGTH } from '../../lib/database/constants/mongo.constants';

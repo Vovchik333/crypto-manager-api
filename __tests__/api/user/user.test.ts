@@ -8,12 +8,13 @@ import {
     signUpInput
 } from "../../data/user";
 import app from 'app';
-import { userRepository } from "@repositories";
-import { ApiPath, HttpCode, HttpHeader, HttpMethod } from "@enums";
-import { hashManager } from "@helpers";
+import { ApiPath } from "@enums";
+import { HttpCode, HttpHeader, HttpMethod } from "@lib/services/http";
+import { hashService } from "@lib/services/hash";
 import { OBJECT_ID_LENGTH } from "@constants";
 import { ErrorMessage } from "@enums";
-import { authService, userService } from "@services";
+import { authService } from "@routes/auth";
+import { userService, userRepository } from "@routes/user";
 
 const usersPath = `${ApiPath.API}${ApiPath.USERS}`;
 
@@ -50,7 +51,7 @@ describe(`${usersPath} routes`, () => {
             expect(user.id.length).toBe(OBJECT_ID_LENGTH);
             expect(user.nickname).toBe(signUpInput.nickname);
             expect(user.email).toBe(signUpInput.email);
-            expect(hashManager.compare(signUpInput.password, user.password)).toBe(true);
+            expect(hashService.compare(signUpInput.password, user.password)).toBe(true);
         });
 
         it('should return a message that a user not authorized', async () => {
@@ -113,7 +114,7 @@ describe(`${usersPath} routes`, () => {
             expect(user.id.length).toBe(OBJECT_ID_LENGTH);
             expect(user.nickname).toBe(updateUserInput.nickname);
             expect(user.email).toBe(updateUserInput.email);
-            expect(hashManager.compare(updateUserInput.password, user.password)).toBe(true);
+            expect(hashService.compare(updateUserInput.password, user.password)).toBe(true);
         });
 
         it('should return a message that a user with the same mail already exists', async () => {
