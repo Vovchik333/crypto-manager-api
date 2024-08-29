@@ -1,4 +1,3 @@
-export { type JwtRequest } from './jwt';
 export { 
     type SignInPayload, 
     type SignUpPayload 
@@ -7,3 +6,7 @@ export {
     type User, 
     type UserWithToken
 } from './user';
+export { 
+    type Transaction, 
+    type TransactionRequestData 
+} from './transaction';

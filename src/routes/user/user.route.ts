@@ -1,28 +1,44 @@
 import { Router } from "express";
 import { ApiPath } from "@enums";
-import { userController } from "@controllers";
-import { validate, authorization } from "@middlewares";
-import { updateUserSchema } from "@helpers";
+import { UserController } from "@routes/user";
+import { validate, authorization } from "@lib/middlewares";
+import { updateUserSchema } from "./user.schemas";
 
-const router = Router();
+class UserRoute {
+    #userController: UserController;
+    #router: Router;
 
-router.get(
-    ApiPath.ID, 
-    validate(),
-    authorization,
-    userController.getById
-);
-router.put(
-    ApiPath.ID, 
-    validate(updateUserSchema),
-    authorization,
-    userController.updateById
-);
-router.delete(
-    ApiPath.ID, 
-    validate(),
-    authorization,
-    userController.deleteById
-);
+    constructor(userController: UserController) {
+        this.#router = Router();
+        this.#userController = userController;
 
-export { router as userRoutes };
+        this.#initRoutes();
+    }
+
+    public get router() {
+        return this.#router;
+    }
+
+    #initRoutes(): void {
+        this.#router.get(
+            ApiPath.ID, 
+            validate(),
+            authorization,
+            this.#userController.getById
+        );
+        this.#router.put(
+            ApiPath.ID, 
+            validate(updateUserSchema),
+            authorization,
+            this.#userController.updateById
+        );
+        this.#router.delete(
+            ApiPath.ID, 
+            validate(),
+            authorization,
+            this.#userController.deleteById
+        );
+    }
+}
+
+export { UserRoute };

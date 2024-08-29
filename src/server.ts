@@ -1,5 +1,5 @@
 import app from "./app";
-import { connector } from "@database";
+import { connector } from "./lib/database";
 
 (async () => {
   await connector.connectToDB();

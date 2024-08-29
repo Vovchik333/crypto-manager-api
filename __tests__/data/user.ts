@@ -1,42 +1,34 @@
-import { jwtManager } from "@helpers";
 import mongoose from "mongoose";
 
-const signUpUserFakeData = {
+const signUpInput = {
     nickname: 'Joe21',
     email: 'joe21@gmail.com',
     password: 'joe12345'
 };
 
-const signInUserFakeData = {
+const signInInput = {
     email: 'joe21@gmail.com',
     password: 'joe12345'
 };
 
-const userFakeData = {
-    nickname: 'Jake1223',
-    email: 'jake02@gmail.com',
-    password: 'jake010132'
-};
-
-const otherUserFakeData = {
+const otherUserInput = {
     nickname: 'Jason',
     email: 'jason12@gmail.com',
     password: 'jason12132'
 };
 
-const updateUserFakeData = {
+const updateUserInput = {
     nickname: 'Jak8',
     email: 'jake12302@gmail.com',
     password: '129890281203012380'
 };
 
-const FAKE_USER_JWT_TOKEN = jwtManager.signJwt('testId');
+const USER_OBJECT_ID = (new mongoose.Types.ObjectId()).toString();
 
 export { 
-    signUpUserFakeData, 
-    signInUserFakeData, 
-    userFakeData,
-    otherUserFakeData,
-    updateUserFakeData, 
-    FAKE_USER_JWT_TOKEN 
+    signUpInput, 
+    signInInput, 
+    otherUserInput,
+    updateUserInput, 
+    USER_OBJECT_ID 
 };

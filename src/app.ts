@@ -1,9 +1,9 @@
 import express, { Express } from "express";
 import cors from "cors";
-import { router as routes } from '@routes';
-import { ApiPath } from "@enums";
-import { errorResponder } from "@middlewares";
 import { API_PORT } from "@config";
+import { ApiPath } from "@enums";
+import { router as routes } from '@routes/index';
+import { errorResponder } from "@lib/middlewares";
 
 class App {
     #instance: Express;
