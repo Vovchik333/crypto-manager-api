@@ -6,7 +6,8 @@ const ApiPath = {
     AUTH: '/auth',
     SIGN_IN: '/sign-in',
     SIGN_UP: '/sign-up',
-    TRANSACTIONS: '/transactions'
+    TRANSACTIONS: '/transactions',
+    ASSETS: '/assets'
 } as const;
 
 export { ApiPath };
