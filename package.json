@@ -7,10 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "npx tsc --project ./tsconfig.build.json",
-    "test": "jest",
-    "test:auth": "jest auth.test.ts",
-    "test:user": "jest user.test.ts",
-    "test:transaction": "jest transaction.test.ts"
+    "test": "jest"
   },
   "author": "Volodymyr Potapenko",
   "license": "MIT",
