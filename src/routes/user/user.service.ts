@@ -14,16 +14,7 @@ class UserService {
     }
 
     public async getById(id: string): Promise<User | null> {
-        const userFromDb = await this.#userRepository.getById(id);
-
-        if (userFromDb === null) {
-            throw new HttpError({
-                status: HttpCode.NOT_FOUND,
-                message: ErrorMessage.NOT_FOUND
-            });
-        }
-
-        const user = mapMongoObject<User>(userFromDb);
+        const user = mapMongoObject<User>(await this.#userRepository.getById(id));
 
         return user;
     }
@@ -42,31 +33,13 @@ class UserService {
             payload.password = await hashService.hashData(payload.password);
         }
 
-        const userFromDb = await this.#userRepository.updateById(id, payload);
-        
-        if (userFromDb === null) {
-            throw new HttpError({
-                status: HttpCode.NOT_FOUND,
-                message: ErrorMessage.NOT_FOUND
-            });
-        }
-
-        const user = mapMongoObject<User>(userFromDb);
+        const user = mapMongoObject<User>(await this.#userRepository.updateById(id, payload));
 
         return user;
     }
 
     public async deleteById(id: string): Promise<User | null> {
-        const userFromDb = await this.#userRepository.deleteById(id);
-
-        if (userFromDb === null) {
-            throw new HttpError({
-                status: HttpCode.NOT_FOUND,
-                message: ErrorMessage.NOT_FOUND
-            });
-        }
-
-        const user = mapMongoObject<User>(userFromDb);
+        const user = mapMongoObject<User>(await this.#userRepository.deleteById(id));
 
         return user;
     }

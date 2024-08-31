@@ -7,8 +7,10 @@ class UserRepository extends AbstractRepository<User> {
         super(model);
     }
 
-    public getByEmail(email: string): Promise<User | null> {
-        return this.model.findOne({ email }).exec();
+    public async getByEmail(email: string): Promise<User | null> {
+        const user = await this.model.findOne({ email }).exec();
+
+        return user;
     }
 }
 

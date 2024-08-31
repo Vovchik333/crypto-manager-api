@@ -24,8 +24,7 @@ class AuthService {
         }
 
         payload.password = await hashService.hashData(payload.password);
-        const userFromDb = await this.#userRepository.create(payload);
-        const user = mapMongoObject<User>(userFromDb);
+        const user = mapMongoObject<User>(await this.#userRepository.create(payload));
 
         return {
             user,
@@ -34,16 +33,7 @@ class AuthService {
     }
 
     public async signIn(payload: SignInPayload): Promise<UserWithToken> {
-        const userFromDb = await this.#userRepository.getByEmail(payload.email);
-
-        if (userFromDb === null) {
-            throw new HttpError({
-                status: HttpCode.NOT_FOUND,
-                message: ErrorMessage.NOT_FOUND
-            });
-        }
-
-        const user = mapMongoObject<User>(userFromDb); 
+        const user = mapMongoObject<User>(await this.#userRepository.getByEmail(payload.email));
         const isMatch = hashService.compare(payload.password, user.password);
 
         if(!isMatch) {
