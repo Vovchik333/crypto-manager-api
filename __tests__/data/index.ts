@@ -4,7 +4,11 @@ export {
     USER_OBJECT_ID
 } from './user';
 export {
-    transactionInput,
-    otherTransactionInput,
+    buyTransactionInput,
+    sellTransactionInput,
+    otherBuyTransactionInput,
     transactionUpdateInput
 } from './transaction';
+export {
+    assetInput
+} from './asset';
